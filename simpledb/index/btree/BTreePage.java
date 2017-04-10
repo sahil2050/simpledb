@@ -1,7 +1,10 @@
 package simpledb.index.btree;
 
-import static java.sql.Types.INTEGER;
+import static java.sql.Types.*;
 import static simpledb.file.Page.*;
+
+import java.util.Date;
+
 import simpledb.file.Block;
 import simpledb.record.*;
 import simpledb.query.*;
@@ -191,6 +194,11 @@ public class BTreePage {
       return tx.getInt(currentblk, pos);
    }
    
+   private Date getTimestamp(int slot, String fldname) {
+      int pos = fldpos(slot, fldname);
+      return tx.getTimestamp(currentblk, pos);
+   }
+   
    private String getString(int slot, String fldname) {
       int pos = fldpos(slot, fldname);
       return tx.getString(currentblk, pos);
@@ -200,8 +208,10 @@ public class BTreePage {
       int type = ti.schema().type(fldname);
       if (type == INTEGER)
          return new IntConstant(getInt(slot, fldname));
-      else
+      else if(type == VARCHAR)
          return new StringConstant(getString(slot, fldname));
+      else
+    	 return new TimestampConstant(getTimestamp(slot,fldname).getTime());
    }
    
    private void setInt(int slot, String fldname, int val) {
@@ -214,12 +224,19 @@ public class BTreePage {
       tx.setString(currentblk, pos, val);
    }
    
+   private void setTimestamp(int slot, String fldname, Date val) {
+      int pos = fldpos(slot, fldname);
+      tx.setTimestamp(currentblk, pos, val);
+   }
+   
    private void setVal(int slot, String fldname, Constant val) {
       int type = ti.schema().type(fldname);
       if (type == INTEGER)
          setInt(slot, fldname, (Integer)val.asJavaVal());
-      else
+      else if(type == VARCHAR)
          setString(slot, fldname, (String)val.asJavaVal());
+      else
+    	 setTimestamp(slot, fldname, (Date)val.asJavaVal()); 
    }
    
    private void setNumRecs(int n) {

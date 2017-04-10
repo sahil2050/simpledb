@@ -1,6 +1,8 @@
 package studentClient.simpledb;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
+
 import simpledb.remote.SimpleDriver;
 import java.io.*;
 
@@ -70,8 +72,13 @@ public class SQLInterpreter {
 					String fmt = "%" + md.getColumnDisplaySize(i);
 					if (fldtype == Types.INTEGER)
 						System.out.format(fmt + "d", rs.getInt(fldname));
-					else
+					else if(fldtype == Types.VARCHAR)
 						System.out.format(fmt + "s", rs.getString(fldname));
+					else{ 
+						SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						String strDate = formatter.format(rs.getTimestamp(fldname));
+						System.out.format(fmt + "s", strDate);
+					}
 				}
 				System.out.println();
 			}

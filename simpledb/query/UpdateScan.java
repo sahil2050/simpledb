@@ -1,5 +1,7 @@
 package simpledb.query;
 
+import java.util.Date;
+
 import simpledb.record.RID;
 
 /**
@@ -31,6 +33,13 @@ public interface UpdateScan extends Scan {
    /**
     * Inserts a new record somewhere in the scan.
     */
+   
+   /**
+    * Modifies the field value of the current record.
+    * @param fldname the name of the field
+    * @param val the new integer value
+    */
+   public void setTimestamp(String fldname, Date val);
    public void insert();
    
    /**

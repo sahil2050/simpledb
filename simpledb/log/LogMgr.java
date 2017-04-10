@@ -104,8 +104,10 @@ public class LogMgr implements Iterable<BasicLogRecord> {
    private void appendVal(Object val) {
       if (val instanceof String)
          mypage.setString(currentpos, (String)val);
+      else if(val instanceof Date)
+    	 mypage.setTimestamp(currentpos, (Date)val);
       else
-         mypage.setInt(currentpos, (Integer)val);
+    	 mypage.setInt(currentpos, (Integer)val);
       currentpos += size(val);
    }
 

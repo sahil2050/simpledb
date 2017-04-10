@@ -24,13 +24,26 @@ public class StringConstant implements Constant {
    }
    
    public boolean equals(Object obj) {
-      StringConstant sc = (StringConstant) obj;
-      return sc != null && val.equals(sc.val);
+      if(obj instanceof StringConstant){
+    	  StringConstant sc = (StringConstant) obj;
+    	  return sc != null && val.equals(sc.val);
+      }
+      else{
+    	  TimestampConstant tsc = (TimestampConstant) obj;
+    	  return tsc != null && val.equals(tsc.toString()); 
+      }
    }
    
    public int compareTo(Constant c) {
-      StringConstant sc = (StringConstant) c;
-      return val.compareTo(sc.val);
+	   if(c instanceof StringConstant){
+	    	  StringConstant sc = (StringConstant) c;
+	    	  return this.val.compareTo(sc.val);
+	   }
+	   else{
+	    	  TimestampConstant tsc = (TimestampConstant) c;
+	    	  TimestampConstant thisvalue = new TimestampConstant(val);
+	    	  return thisvalue.compareTo(tsc); 
+	   }
    }
    
    public int hashCode() {

@@ -1,5 +1,7 @@
 package simpledb.planner;
 
+import java.text.ParseException;
+
 import simpledb.tx.Transaction;
 import simpledb.parse.*;
 import simpledb.query.*;
@@ -38,6 +40,7 @@ public class Planner {
     * @param cmd the SQL update string
     * @param tx the transaction
     * @return an integer denoting the number of affected records
+ * @throws ParseException 
     */
    public int executeUpdate(String cmd, Transaction tx) {
       Parser parser = new Parser(cmd);

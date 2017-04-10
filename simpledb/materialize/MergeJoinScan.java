@@ -1,5 +1,7 @@
 package simpledb.materialize;
 
+import java.util.Date;
+
 import simpledb.query.*;
 
 /**
@@ -125,6 +127,20 @@ public class MergeJoinScan implements Scan {
       else
          return s2.getString(fldname);
    }
+   
+   /** 
+    * Returns the integer value of the specified field.
+    * The value is obtained from whichever scan
+    * contains the field.
+    * @see simpledb.query.Scan#getInt(java.util.Date)
+    */
+   public Date getTimestamp(String fldname) {
+      if (s1.hasField(fldname))
+         return s1.getTimestamp(fldname);
+      else
+         return s2.getTimestamp(fldname);
+   }
+   
    
    /**
     * Returns true if the specified field is in

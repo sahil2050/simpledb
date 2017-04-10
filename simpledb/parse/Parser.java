@@ -24,7 +24,7 @@ public class Parser {
    public Constant constant() {
       if (lex.matchStringConstant())
          return new StringConstant(lex.eatStringConstant());
-      else
+      else 
          return new IntConstant(lex.eatIntConstant());
    }
    
@@ -35,15 +35,32 @@ public class Parser {
          return new ConstantExpression(constant());
    }
    
-   public Term term() {
+   /*public Term term() {
       Expression lhs = expression();
       lex.eatDelim('=');
       Expression rhs = expression();
       return new Term(lhs, rhs);
-   }
+   }*/
    
    public Predicate predicate() {
-      Predicate pred = new Predicate(term());
+      Predicate pred;
+      Expression lhs = expression();;
+      if(lex.matchKeyword("between")){
+    	  lex.eatKeyword("between");
+    	  ConstantExpression LL = new ConstantExpression(constant());
+    	  ConstantExpression UL = new ConstantExpression(constant());
+    	  StringConstant lsc = (StringConstant)LL.asConstant();
+    	  StringConstant usc = (StringConstant)UL.asConstant();
+    	  TimestampConstant ll = new TimestampConstant(lsc.asJavaVal());
+    	  TimestampConstant ul = new TimestampConstant(usc.asJavaVal());
+    	  pred = new Predicate(new BetweenTerm((FieldNameExpression)lhs,ll,ul));
+      }
+      else{
+    	  lex.eatDelim('=');
+          Expression rhs = expression();
+          pred = new Predicate(new Term(lhs, rhs));
+      }
+      //= new Predicate(term());
       if (lex.matchKeyword("and")) {
          lex.eatKeyword("and");
          pred.conjoinWith(predicate());
@@ -208,12 +225,16 @@ public class Parser {
          lex.eatKeyword("int");
          schema.addIntField(fldname);
       }
-      else {
+      else if(lex.matchKeyword("varchar")){
          lex.eatKeyword("varchar");
          lex.eatDelim('(');
          int strLen = lex.eatIntConstant();
          lex.eatDelim(')');
          schema.addStringField(fldname, strLen);
+      }
+      else{
+    	  lex.eatKeyword("timestamp");
+    	  schema.addTimestampField(fldname);
       }
       return schema;
    }

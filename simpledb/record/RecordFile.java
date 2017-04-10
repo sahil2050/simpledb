@@ -1,5 +1,7 @@
 package simpledb.record;
 
+import java.util.Date;
+
 import simpledb.file.Block;
 import simpledb.tx.Transaction;
 
@@ -82,6 +84,16 @@ public class RecordFile {
    }
    
    /**
+    * Returns the value of the specified field
+    * in the current record.
+    * @param fldname the name of the field
+    * @return the integer value at that field
+    */
+   public Date getTimestamp(String fldname) {
+      return rp.getTimestamp(fldname);
+   }
+   
+   /**
     * Sets the value of the specified field 
     * in the current record.
     * @param fldname the name of the field
@@ -99,6 +111,16 @@ public class RecordFile {
     */
    public void setString(String fldname, String val) {
       rp.setString(fldname, val);
+   }
+   
+   /**
+    * Sets the value of the specified field 
+    * in the current record.
+    * @param fldname the name of the field
+    * @param val the new value for the field
+    */
+   public void setTimestamp(String fldname, Date val) {
+      rp.setTimestamp(fldname, val);
    }
    
    /**

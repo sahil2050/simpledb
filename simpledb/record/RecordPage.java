@@ -1,6 +1,9 @@
 package simpledb.record;
 
 import static simpledb.file.Page.*;
+
+import java.util.Date;
+
 import simpledb.file.Block;
 import simpledb.tx.Transaction;
 
@@ -72,6 +75,18 @@ public class RecordPage {
    }
    
    /**
+    * Returns the integer value stored for the
+    * specified field of the current record.
+    * @param fldname the name of the field.
+    * @return the integer stored in that field
+    */
+   public Date getTimestamp(String fldname) {
+      int position = fieldpos(fldname);
+      return tx.getTimestamp(blk, position);
+   }
+   
+   
+   /**
     * Stores an integer at the specified field
     * of the current record.
     * @param fldname the name of the field
@@ -91,6 +106,17 @@ public class RecordPage {
    public void setString(String fldname, String val) {
       int position = fieldpos(fldname);
       tx.setString(blk, position, val);
+   }
+   
+   /**
+    * Stores an integer at the specified field
+    * of the current record.
+    * @param fldname the name of the field
+    * @param val the integer value stored in that field
+    */
+   public void setTimestamp(String fldname, Date val) {
+      int position = fieldpos(fldname);
+      tx.setTimestamp(blk, position, val);
    }
    
    /**

@@ -9,6 +9,7 @@ import java.util.*;
  */
 public class Predicate {
    private List<Term> terms = new ArrayList<Term>();
+   private List<BetweenTerm> betweenTerms = new ArrayList<BetweenTerm>();
    
    /**
     * Creates an empty predicate, corresponding to "true".
@@ -20,8 +21,13 @@ public class Predicate {
     * @param t the term
     */
    public Predicate(Term t) {
-      terms.add(t);
+	   terms.add(t);
    }
+   
+   public Predicate(BetweenTerm bt) {
+	   betweenTerms.add(bt);
+   }
+	   
    
    /**
     * Modifies the predicate to be the conjunction of
@@ -30,6 +36,7 @@ public class Predicate {
     */
    public void conjoinWith(Predicate pred) {
       terms.addAll(pred.terms);
+      betweenTerms.addAll(pred.betweenTerms);
    }
    
    /**
@@ -41,7 +48,10 @@ public class Predicate {
    public boolean isSatisfied(Scan s) {
       for (Term t : terms)
          if (!t.isSatisfied(s))
-         return false;
+        	 return false;
+      for (BetweenTerm bt : betweenTerms)
+    	  if(!bt.isSatisfied(s))
+    		 return false;
       return true;
    }
    
@@ -70,7 +80,10 @@ public class Predicate {
       for (Term t : terms)
          if (t.appliesTo(sch))
          result.terms.add(t);
-      if (result.terms.size() == 0)
+      for(BetweenTerm bt : betweenTerms)
+    	  if (bt.appliesTo(sch))
+    	  result.betweenTerms.add(bt);
+      if (result.terms.size() == 0 && result.betweenTerms.size() == 0)
          return null;
       else
          return result;
@@ -90,11 +103,16 @@ public class Predicate {
       newsch.addAll(sch1);
       newsch.addAll(sch2);
       for (Term t : terms)
-         if (!t.appliesTo(sch1)  &&
+        if (!t.appliesTo(sch1)  &&
              !t.appliesTo(sch2) &&
              t.appliesTo(newsch))
-         result.terms.add(t);
-      if (result.terms.size() == 0)
+        result.terms.add(t);
+      for(BetweenTerm bt : betweenTerms)
+      	if(!bt.appliesTo(sch1)  &&
+           !bt.appliesTo(sch2) &&
+           bt.appliesTo(newsch))
+      	result.betweenTerms.add(bt);
+      if (result.terms.size() == 0 && result.betweenTerms.size() == 0)
          return null;
       else
          return result;
@@ -114,6 +132,11 @@ public class Predicate {
          if (c != null)
             return c;
       }
+      for (BetweenTerm bt : betweenTerms) {
+          Constant c = bt.equatesWithConstant(fldname);
+          if (c != null)
+             return c;
+       }
       return null;
    }
    
@@ -141,6 +164,10 @@ public class Predicate {
       String result = iter.next().toString();
       while (iter.hasNext())
          result += " and " + iter.next().toString();
+      
+      Iterator<BetweenTerm> iter2 = betweenTerms.iterator();
+      while (iter2.hasNext())
+          result += " and " + iter2.next().toString();
       return result;
    }
 }

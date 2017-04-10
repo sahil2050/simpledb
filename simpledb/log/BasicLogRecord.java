@@ -1,6 +1,9 @@
 package simpledb.log;
 
 import static simpledb.file.Page.*;
+
+import java.util.Date;
+
 import simpledb.file.Page;
 
 /**
@@ -49,6 +52,17 @@ public class BasicLogRecord {
    public String nextString() {
       String result = pg.getString(pos);
       pos += STR_SIZE(result.length());
+      return result;
+   }
+   
+   /**
+    * Returns the next value of the current log record, 
+    * assuming it is an timestamp.
+    * @return the next value of the current log record
+    */
+   public Date nextTimestamp() {
+      Date result = pg.getTimestamp(pos);
+      pos += TIMESTAMP_SIZE;
       return result;
    }
 }

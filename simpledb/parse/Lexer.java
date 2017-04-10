@@ -131,7 +131,7 @@ public class Lexer {
     */
    public String eatId() {
       if (!matchId())
-         throw new BadSyntaxException();
+    	  throw new BadSyntaxException();
       String s = tok.sval;
       nextToken();
       return s;
@@ -147,8 +147,8 @@ public class Lexer {
    }
    
    private void initKeywords() {
-      keywords = Arrays.asList("select", "from", "where", "and",
+      keywords = Arrays.asList("select", "from", "where", "and", "between",
                                "insert", "into", "values", "delete", "update", "set", 
-                               "create", "table", "int", "varchar", "view", "as", "index", "on");
+                               "create", "table", "int", "varchar", "view", "as", "index", "on", "timestamp");
    }
 }

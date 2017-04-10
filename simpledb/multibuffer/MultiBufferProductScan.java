@@ -1,5 +1,7 @@
 package simpledb.multibuffer;
 
+import java.util.Date;
+
 import simpledb.tx.Transaction;
 import simpledb.record.TableInfo;
 import simpledb.query.*;
@@ -93,6 +95,16 @@ public class MultiBufferProductScan implements Scan {
     */
    public String getString(String fldname) {
       return prodscan.getString(fldname);
+   }
+   
+   /** 
+    * Returns the integer value of the specified field.
+    * The value is obtained from whichever scan
+    * contains the field.
+    * @see simpledb.query.Scan#getTimestamp(java.util.Date)
+    */
+   public Date getTimestamp(String fldname) {
+      return prodscan.getTimestamp(fldname);
    }
    
    /**

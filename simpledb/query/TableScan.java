@@ -1,6 +1,11 @@
 package simpledb.query;
 
-import static java.sql.Types.INTEGER;
+import static java.sql.Types.*;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import simpledb.tx.Transaction;
 import simpledb.record.*;
 
@@ -51,8 +56,10 @@ public class TableScan implements UpdateScan {
    public Constant getVal(String fldname) {
       if (sch.type(fldname) == INTEGER)
          return new IntConstant(rf.getInt(fldname));
-      else
+      else if(sch.type(fldname) == VARCHAR)
          return new StringConstant(rf.getString(fldname));
+      else 
+    	 return new TimestampConstant(rf.getTimestamp(fldname).getTime());
    }
    
    public int getInt(String fldname) {
@@ -61,6 +68,10 @@ public class TableScan implements UpdateScan {
    
    public String getString(String fldname) {
       return rf.getString(fldname);
+   }
+   
+   public Date getTimestamp(String fldname) {
+	      return rf.getTimestamp(fldname);
    }
    
    public boolean hasField(String fldname) {
@@ -79,24 +90,42 @@ public class TableScan implements UpdateScan {
    public void setVal(String fldname, Constant val) {
       if (sch.type(fldname) == INTEGER)
          rf.setInt(fldname, (Integer)val.asJavaVal());
-      else
+      else if(sch.type(fldname) == VARCHAR)
          rf.setString(fldname, (String)val.asJavaVal());
+      else{
+    	  if(val instanceof StringConstant){
+    		  SimpleDateFormat formatter = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
+    		  formatter.setLenient(false);
+    		  try {
+				rf.setTimestamp(fldname, formatter.parse((String) val.asJavaVal()));
+    		  } catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+    		  }
+    	  }
+    	  else
+    		  rf.setTimestamp(fldname, (Date)val.asJavaVal());
+    	  }
    }
    
    public void setInt(String fldname, int val) {
-      rf.setInt(fldname, val);
+	   rf.setInt(fldname, val);
    }
    
    public void setString(String fldname, String val) {
-      rf.setString(fldname, val);
+	   rf.setString(fldname, val);
+   }
+   
+   public void setTimestamp(String fldname, Date val) {
+	   rf.setTimestamp(fldname, val);
    }
    
    public void delete() {
-      rf.delete();
+	   rf.delete();
    }
    
    public void insert() {
-      rf.insert();
+	   rf.insert();
    }
    
    public RID getRid() {

@@ -1,9 +1,12 @@
 package simpledb.index.planner;
 
+import static java.sql.Types.TIMESTAMP;
+
 import java.util.Iterator;
 import java.util.Map;
 
 import simpledb.record.RID;
+import simpledb.record.Schema;
 import simpledb.server.SimpleDB;
 import simpledb.tx.Transaction;
 import simpledb.index.Index;
@@ -20,10 +23,14 @@ import simpledb.query.*;
  */
 public class IndexUpdatePlanner implements UpdatePlanner {
    
+	public static int REC_MAX = 100000;
+	
    public int executeInsert(InsertData data, Transaction tx) {
       String tblname = data.tableName();
       Plan p = new TablePlan(tblname, tx);
-      
+      if(p.recordsOutput() > REC_MAX)
+    	  throw new MemoryException();
+      Schema sch = p.schema(); 
       // first, insert the record
       UpdateScan s = (UpdateScan) p.open();
       s.insert();
@@ -34,9 +41,12 @@ public class IndexUpdatePlanner implements UpdatePlanner {
       Iterator<Constant> valIter = data.vals().iterator();
       for (String fldname : data.fields()) {
          Constant val = valIter.next();
+         if(sch.type(fldname) == TIMESTAMP){
+        	 StringConstant sc = (StringConstant)val;
+        	 val = new TimestampConstant(sc.asJavaVal());
+         }
          System.out.println("Modify field " + fldname + " to val " + val);
          s.setVal(fldname, val);
-         
          IndexInfo ii = indexes.get(fldname);
          if (ii != null) {
             Index idx = ii.open();

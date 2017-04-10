@@ -1,5 +1,7 @@
 package simpledb.index.query;
 
+import java.util.Date;
+
 import simpledb.query.*;
 import simpledb.index.Index;
 
@@ -107,6 +109,18 @@ public class IndexJoinScan implements Scan {
       else
          return s.getString(fldname);
    }
+   
+   /**
+    * Returns the integer value of the specified field.
+    * @see simpledb.query.Scan#getVal(java.util.Date)
+    */
+   public Date getTimestamp(String fldname) {
+      if (ts.hasField(fldname))
+         return ts.getTimestamp(fldname);
+      else  
+         return s.getTimestamp(fldname);
+   }
+   
    
    /** Returns true if the field is in the schema.
      * @see simpledb.query.Scan#hasField(java.lang.String)

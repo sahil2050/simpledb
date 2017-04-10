@@ -1,7 +1,11 @@
 package simpledb.index.btree;
 
 import static simpledb.file.Page.*;
-import static java.sql.Types.INTEGER;
+import static java.sql.Types.*;
+
+import java.util.Date;
+
+
 import simpledb.file.Page;
 import simpledb.buffer.PageFormatter;
 import simpledb.record.TableInfo;
@@ -48,8 +52,10 @@ public class BTPageFormatter implements PageFormatter {
          int offset = ti.offset(fldname);
          if (ti.schema().type(fldname) == INTEGER)
             page.setInt(pos + offset, 0);
-         else
+         else if(ti.schema().type(fldname) == VARCHAR)
             page.setString(pos + offset, "");
+         else
+        	 page.setTimestamp(pos + offset,new Date(0));
       }
    }
 }

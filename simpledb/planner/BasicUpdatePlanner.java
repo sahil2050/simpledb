@@ -1,6 +1,9 @@
 package simpledb.planner;
 
 import java.util.Iterator;
+
+import static java.sql.Types.*;
+import simpledb.record.Schema;
 import simpledb.server.SimpleDB;
 import simpledb.tx.Transaction;
 import simpledb.parse.*;
@@ -12,6 +15,8 @@ import simpledb.query.*;
  */
 public class BasicUpdatePlanner implements UpdatePlanner {
    
+	public static int REC_MAX = 100000;
+	
    public int executeDelete(DeleteData data, Transaction tx) {
       Plan p = new TablePlan(data.tableName(), tx);
       p = new SelectPlan(p, data.pred());
@@ -41,11 +46,18 @@ public class BasicUpdatePlanner implements UpdatePlanner {
    
    public int executeInsert(InsertData data, Transaction tx) {
       Plan p = new TablePlan(data.tableName(), tx);
+      if(p.recordsOutput() > REC_MAX)
+    	  throw new MemoryException();
+      Schema sch = p.schema(); 
       UpdateScan us = (UpdateScan) p.open();
       us.insert();
       Iterator<Constant> iter = data.vals().iterator();
       for (String fldname : data.fields()) {
          Constant val = iter.next();
+         if(sch.type(fldname) == TIMESTAMP){
+        	 StringConstant sc = (StringConstant)val;
+        	 val = new TimestampConstant(sc.asJavaVal());
+         }
          us.setVal(fldname, val);
       }
       us.close();
